@@ -7,15 +7,27 @@ var ObjectID = require('mongodb').ObjectID;
 exports.route = (req, res) => {
     const path = url.parse(req.url).pathname;
 
+    let data = '';
+
+    // 接收数据
+    if (req.method === 'GET') {
+        data = querystring.parse(url.parse(req.url).query);
+    } else {
+        req.on('data', function (chunk) {
+            data += chunk;
+        });
+        req.on('end', function () {
+            data = JSON.parse(data);
+        })
+    }
+
     switch (path) {
         case '/':
             console.log('我是默认页面');
             res.end(`111`);
             break;
         case '/api/type/add':
-            let data = querystring.parse(url.parse(req.url).query);
-            // 添加一个分类信息
-            connectMogo('type', 'findOne').then(x => {
+            connectMogo('type', 'findOne', { name: data.name }).then(x => {
                 if (x.arr && x.arr.name === data.name) {
                     x.db.close();
                     res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
@@ -25,13 +37,14 @@ exports.route = (req, res) => {
                 connectMogo('type', 'insertOne', data).then(z => {
                     x.db.close();
                     res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
-                    res.end(JSON.stringify({ status: 1, msg: "添加成功！", data }));
+                    res.end(JSON.stringify({ status: 1, msg: "添加成功！", data: data }));
                 }).catch(err => {
                     console.log(err)
                 })
             }).catch(err => {
                 console.log(err);
             })
+
             break;
         case '/api/type/list':
             // 返回所有的分类列表
@@ -46,9 +59,8 @@ exports.route = (req, res) => {
             })
             break;
         case '/api/type/edit':
-            // 返回所有的分类列表
-            let editEata = querystring.parse(url.parse(req.url).query);
-            connectMogo('type', 'updateOne', { _id: ObjectID(editEata._id) }, { $set: { ...editEata, _id: ObjectID(editEata._id) } }).then(x => {
+            // 编辑分类
+            connectMogo('type', 'updateOne', { _id: ObjectID(data._id) }, { $set: { ...data, _id: ObjectID(data._id) } }).then(x => {
                 x.db.close();
                 res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
                 res.end(JSON.stringify({ status: 1, msg: "编辑成功！", data: x.arr }));
@@ -58,9 +70,8 @@ exports.route = (req, res) => {
             })
             break;
         case '/api/type/delete':
-            // 返回所有的分类列表
-            let deleteEata = querystring.parse(url.parse(req.url).query);
-            connectMogo('type', 'deleteOne', { _id: ObjectID(deleteEata._id) }).then(x => {
+            // 删除
+            connectMogo('type', 'deleteOne', { _id: ObjectID(data._id) }).then(x => {
                 x.db.close();
                 res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
                 res.end(JSON.stringify({ status: 1, msg: "删除成功！", data: x.arr }));
@@ -69,7 +80,49 @@ exports.route = (req, res) => {
                 console.log(err);
             })
             break;
+        case '/api/list/add':
+            // 添加列表数据
+            connectMogo('list', 'insertOne', data).then(z => {
+                z.db.close();
+                res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
+                res.end(JSON.stringify({ status: 1, msg: "添加成功！", data: data }));
+            }).catch(err => {
+                console.log(err)
+            })
+            break;
+        case '/api/list/list':
+            // 返回所有的列表
+            connectMogo('list', 'find').then(x => {
+                x.db.close();
+                res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
+                res.end(JSON.stringify({ status: 1, msg: "查询成功！", data: x.arr }));
 
+            }).catch(err => {
+                console.log(err);
+            })
+            break;
+        case '/api/list/edit':
+            // 编辑
+            connectMogo('list', 'updateOne', { _id: ObjectID(data._id) }, { $set: { ...data, _id: ObjectID(data._id) } }).then(x => {
+                x.db.close();
+                res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
+                res.end(JSON.stringify({ status: 1, msg: "编辑成功！", data: x.arr }));
+
+            }).catch(err => {
+                console.log(err);
+            })
+            break;
+        case '/api/list/delete':
+            // 删除
+            connectMogo('list', 'deleteOne', { _id: ObjectID(data._id) }).then(x => {
+                x.db.close();
+                res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
+                res.end(JSON.stringify({ status: 1, msg: "删除成功！", data: x.arr }));
+
+            }).catch(err => {
+                console.log(err);
+            })
+            break;
         default:
             // console.log(111);
             // res.end('else')
