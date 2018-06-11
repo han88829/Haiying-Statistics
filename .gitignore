@@ -5,6 +5,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+servers/node_modules
+
 # Editor directories and files
 .idea
 *.suo
