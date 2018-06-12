@@ -1,12 +1,13 @@
 <template>
 <div class="root">
   <div class="content"> 
-      这是主页FFFF
+      {{code}}
   </div>
   <div class="footer" > 
      <div v-bind:class="{select:type}" v-on:click="onChangetype(true)">列表</div>
      <div v-bind:class="{select:!type}" v-on:click="onChangetype(false)">分类</div>
   </div>
+  <button open-type="getUserInfo">我是按钮</button>
 </div>
 </template>
 
@@ -18,6 +19,7 @@ export default {
     return {
       motto: "Hello World",
       userInfo: {},
+      code: "",
       type: true
     };
   },
@@ -34,9 +36,13 @@ export default {
     getUserInfo() {
       // 调用登录接口
       wx.login({
-        success: () => {
+        success: res => {
+          this.code = res.code || "";
           wx.getUserInfo({
             success: res => {
+              this.userInfo = res.userInfo;
+            },
+            complete: res => {
               this.userInfo = res.userInfo;
             }
           });
