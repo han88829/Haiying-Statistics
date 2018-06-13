@@ -1,6 +1,6 @@
 <template>
     <div class="login">
-         <button open-type="getUserInfo">微信一键登录</button>
+         <button open-type="getUserInfo" @click='getUserInfo()'>微信一键登录</button>
     </div>
 </template>
 
@@ -19,10 +19,8 @@ export default {
           this.code = res.code || "";
           wx.getUserInfo({
             complete: res => {
-              console.log(res);
               if (res.userInfo) {
                 this.userInfo = res.userInfo;
-                console.log(store);
                 wx.request({
                   url: `${store.state.url}/api/login`, //仅为示例，并非真实的接口地址
                   data: {
@@ -33,17 +31,14 @@ export default {
                     "content-type": "application/json" // 默认值
                   },
                   complete: res => {
-                    console.log(res);
+                    if (res.data.status == 1) {
+                      wx.setStorageSync("user", res.data.data);
+                      wx.navigateTo({
+                        url: "/pages/index/main"
+                      });
+                    }
                   }
                 });
-                // wx.navigateTo({
-                //   url: "/pages/index/main"
-                // });
-                // wx.showToast({
-                //   title: "登录成功",
-                //   icon: "success",
-                //   duration: 1000
-                // });
               } else {
                 wx.showToast({
                   title: "登录失败",

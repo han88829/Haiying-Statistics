@@ -7,7 +7,6 @@
      <div v-bind:class="{select:type}" v-on:click="onChangetype(true)">列表</div>
      <div v-bind:class="{select:!type}" v-on:click="onChangetype(false)">分类</div>
   </div>
-  <button open-type="getUserInfo">我是按钮</button>
 </div>
 </template>
 
@@ -29,34 +28,13 @@ export default {
   },
 
   methods: {
-    bindViewTap() {
-      const url = "../logs/main";
-      wx.navigateTo({ url });
-    },
-    getUserInfo() {
-      // 调用登录接口
-      wx.login({
-        success: res => {
-          this.code = res.code || "";
-          wx.getUserInfo({
-            success: res => {
-              this.userInfo = res.userInfo;
-            },
-            complete: res => {
-              this.userInfo = res.userInfo;
-            }
-          });
-        }
-      });
-    },
     onChangetype(type) {
       this.type = type;
-    }
+    },
   },
 
   created() {
-    // 调用应用实例的方法获取全局数据
-    this.getUserInfo();
+    
   }
 };
 </script>
