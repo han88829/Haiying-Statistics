@@ -1,7 +1,8 @@
 <template>
 <div class="root">
   <div class="content"> 
-      {{code}}
+    <home :data="list" :onChange='this.onChangeDate' v-if="type"></home>
+    <type :data="getType" :onChange='this.onChangeDate' v-if="!type"></type>
   </div>
   <div class="footer" > 
      <div v-bind:class="{select:type}" v-on:click="onChangetype(true)">列表</div>
@@ -11,7 +12,9 @@
 </template>
 
 <script>
-import card from "@/components/card";
+import home from "@/components/home";
+import type from "@/components/type";
+import store from "../../store";
 
 export default {
   data() {
@@ -19,22 +22,65 @@ export default {
       motto: "Hello World",
       userInfo: {},
       code: "",
-      type: true
+      type: true,
+      list: [],
+      typeData: [],
+      homeFilter: {
+        year: "",
+        month: "",
+        user: ""
+      }
     };
   },
 
   components: {
-    card
+    home,
+    type
   },
 
   methods: {
     onChangetype(type) {
       this.type = type;
     },
+    getList: (date = {}) => {
+      wx.request({
+        url: `${store.state.url}/api/list/list`, //仅为示例，并非真实的接口地址
+        data: {
+          session_key: store.state.user.session_key,
+          ...date
+        },
+        header: {
+          "content-type": "application/json" // 默认值
+        },
+        complete: res => {
+          this.list = res.data.data || [];
+        }
+      });
+    },
+    getType: () => {
+      wx.request({
+        url: `${store.state.url}/api/type/list`, //仅为示例，并非真实的接口地址
+        data: {
+          ...store.state.user
+        },
+        header: {
+          "content-type": "application/json" // 默认值
+        },
+        complete: res => {
+          this.typeData = res.data.data || [];
+        }
+      });
+    },
+    onChangeDate: function(e) {
+      this.homeFilter.year = store.state.moment(e.target.value).format("YYYY");
+      this.homeFilter.month = store.state.moment(e.target.value).format("MM");
+      this.getList(this.homeFilter);
+    }
   },
 
-  created() {
-    
+  onShow() {
+    this.getList();
+    this.getType();
   }
 };
 </script>
@@ -47,6 +93,7 @@ export default {
   display: flex;
   display: -webkit-flex;
   flex-direction: column;
+  border-top: 1px solid #dcdcdc;
 }
 * {
   margin: 0;
@@ -55,7 +102,6 @@ export default {
 .content {
   flex: 1;
   width: 100vw;
-  background: yellow;
 }
 .footer {
   height: 45px;
@@ -65,6 +111,7 @@ export default {
   display: -webkit-flex;
   flex-direction: row;
   align-items: center;
+  border-top: 1px solid #dcdcdc;
 }
 .footer > div {
   flex: 1;
