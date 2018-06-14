@@ -8,7 +8,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    url: "http://haiying.hanbei.men",
+    url: "http://haiying.h88829.top",
     user: {},
     moment
   },
