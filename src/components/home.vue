@@ -2,27 +2,30 @@
     <div class="home">
         <div class='home_title'>
 <view class="section">
-  <view class="section__title">时间选择器</view>
   <picker mode="date"   @change="onChange">
     <view class="picker">
-      当前选择: 
+    {{obj.year+'年' +obj.month+'月'}}
     </view>
   </picker>
+    <view>
+      {{obj.user}}
+    </view>
+    <a href="/pages/home/add/main" >新增</a>
 </view>
         </div>
-        <div class='home_content'>   
+        <div class='home_content' v-for="(item,index) in data" :key="index">   
 <div class="home_content_title">  
     <img src="https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83erLujLByemCGhib6rqGW9fIDIvZrzYeOZc2aqHsMib4LQZzCFibJjiaD5FWqdPfIthrcE6Cj8oe6KUp1Q/132" alt="" style="height:50px;width:50px;margin-top:5px;">
      <div style='flex:1'>
          <div class="home_content_flex">
-             <span style="flex:1"> 产品名称</span>
-               <span style="flex:1"> 单价</span>
-                 <span style="flex:1"> 数量</span>
+             <span style="flex:1"> {{item.typeName}}</span>
+               <span style="flex:1"> {{item.price}}</span>
+                 <span style="flex:1"> {{item.num}}</span>
          </div>
            <div class="home_content_flex">
-             <span style="flex:1"> 月份</span>
-               <span style="flex:1"> 所属人</span>
-                 <span style="flex:1"> 总价</span>
+             <span style="flex:1"> {{item.month}}</span>
+               <span style="flex:1"> {{item.user}}</span>
+                 <span style="flex:1"> {{item.fee}}</span>
          </div>
      </div>
      
@@ -38,15 +41,7 @@
 
 <script>
 export default {
-  props: ["data",'onChange'],
-  method: {
-    bindTimeChange: date => {
-      console.log(date);
-    }
-  },
-  onShow() {
-    this.bindTimeChange();;
-  }
+  props: ["data", "onChange", "obj"]
 };
 </script>
 
@@ -93,5 +88,12 @@ export default {
 }
 .home_content_footer {
   border-top: 1px solid #dcdcdc;
+}
+.section {
+  padding: 10px;
+  display: flex;
+  display: -webkit-flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 </style>

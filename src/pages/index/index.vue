@@ -1,7 +1,7 @@
 <template>
 <div class="root">
   <div class="content"> 
-    <home :data="list" :onChange='this.onChangeDate' v-if="type"></home>
+    <home :data="list" :obj='homeFilter' :onChange='this.onChangeDate' v-if="type"></home>
     <type :data="getType" :onChange='this.onChangeDate' v-if="!type"></type>
   </div>
   <div class="footer" > 
@@ -16,6 +16,7 @@ import home from "@/components/home";
 import type from "@/components/type";
 import store from "../../store";
 
+const moment = store.state.moment;
 export default {
   data() {
     return {
@@ -26,9 +27,9 @@ export default {
       list: [],
       typeData: [],
       homeFilter: {
-        year: "",
-        month: "",
-        user: ""
+        year: moment().format("YYYY"),
+        month: moment().format("MM"),
+        user: store.state.user.nickName
       }
     };
   },
@@ -53,6 +54,7 @@ export default {
           "content-type": "application/json" // 默认值
         },
         complete: res => {
+          console.log(res);
           this.list = res.data.data || [];
         }
       });
@@ -79,6 +81,7 @@ export default {
   },
 
   onShow() {
+    this.homeFilter.user = store.state.user.nickName;
     this.getList();
     this.getType();
   }

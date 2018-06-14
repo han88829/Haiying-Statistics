@@ -11,6 +11,11 @@ const store = new Vuex.Store({
     url: "http://haiying.hanbei.men",
     user: {},
     moment
+  },
+  mutations: {
+    onChange: (user, data) => {
+      user.user = data;
+    },
   }
 })
 
