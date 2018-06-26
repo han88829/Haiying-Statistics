@@ -35,7 +35,7 @@ export default {
                       wx.setStorageSync("user", res.data.data);
                       console.log(res.data.data);
                       store.commit("onChange", res.data.data);
-                      wx.navigateTo({
+                      wx.redirectTo({
                         url: "/pages/index/main"
                       });
                     }

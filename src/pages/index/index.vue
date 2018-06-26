@@ -1,8 +1,8 @@
 <template>
 <div class="root">
   <div class="content"> 
-    <home :data="list" :obj='homeFilter' :onChange='this.onChangeDate' v-if="type"></home>
-    <type :data="getType" :onChange='this.onChangeDate' v-if="!type"></type>
+    <home :data='list' :obj='homeFilter' :onChange='this.onChangeDate' v-if="type"></home>
+    <type :data="typeData" :onChange='this.onChangeDate' v-if="!type"></type>
   </div>
   <div class="footer" > 
      <div v-bind:class="{select:type}" v-on:click="onChangetype(true)">列表</div>
@@ -43,7 +43,7 @@ export default {
     onChangetype(type) {
       this.type = type;
     },
-    getList: (date = {}) => {
+    getList: function(date = {}) {
       wx.request({
         url: `${store.state.url}/api/list/list`, //仅为示例，并非真实的接口地址
         data: {
@@ -54,12 +54,11 @@ export default {
           "content-type": "application/json" // 默认值
         },
         complete: res => {
-          console.log(res);
           this.list = res.data.data || [];
         }
       });
     },
-    getType: () => {
+    getType: function() {
       wx.request({
         url: `${store.state.url}/api/type/list`, //仅为示例，并非真实的接口地址
         data: {
@@ -107,6 +106,8 @@ export default {
   width: 100vw;
 }
 .footer {
+  position: fixed;
+  bottom: 0;
   height: 45px;
   width: 100vw;
   background: #fff;
